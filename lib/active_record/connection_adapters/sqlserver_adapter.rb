@@ -152,10 +152,10 @@ module ActiveRecord
       ADAPTER_NAME            = 'SQLServer'.freeze
       VERSION                 = '2.2.13'.freeze
       DATABASE_VERSION_REGEXP = /Microsoft SQL Server\s+(\d{4})/
-      SUPPORTED_VERSIONS      = [2000,2005].freeze
+      SUPPORTED_VERSIONS      = [2000, 2005, 2008].freeze
       LIMITABLE_TYPES         = ['string','integer','float','char','nchar','varchar','nvarchar'].freeze
       
-      cattr_accessor :native_text_database_type, :native_binary_database_type, :native_string_database_type,
+      cattr_accessor :native_text_database_type, :native_binary_database_type, :native_string_database_type, :native_date_database_type, 
                      :log_info_schema_queries, :enable_default_unicode_types
       
       class << self
@@ -209,6 +209,10 @@ module ActiveRecord
         database_year == 2005
       end
       
+      def sqlserver_2008?
+        database_year == 2008
+      end
+      
       def version
         self.class::VERSION
       end
@@ -223,7 +227,7 @@ module ActiveRecord
       
       def native_text_database_type
         @@native_text_database_type || 
-        if sqlserver_2005?
+        if sqlserver_2005? || sqlserver_2008?
           enable_default_unicode_types ? 'nvarchar(max)' : 'varchar(max)'
         else
           enable_default_unicode_types ? 'ntext' : 'text'
@@ -231,7 +235,11 @@ module ActiveRecord
       end
       
       def native_binary_database_type
-        @@native_binary_database_type || (sqlserver_2005? ? 'varbinary(max)' : 'image')
+        @@native_binary_database_type || ((sqlserver_2005? || sqlserver_2008?) ? 'varbinary(max)' : 'image')
+      end
+      
+      def native_date_database_type
+        @@native_date_database_type || (sqlserver_2008? ? 'date' : 'datetime')
       end
       
       # QUOTING ==================================================#
@@ -452,7 +460,7 @@ module ActiveRecord
           :datetime     => { :name => "datetime" },
           :timestamp    => { :name => "datetime" },
           :time         => { :name => "datetime" },
-          :date         => { :name => "datetime" },
+          :date         => { :name => native_date_database_type },
           :binary       => { :name => native_binary_database_type },
           :boolean      => { :name => "bit"},
           # These are custom types that may move somewhere else for good schema_dumper.rb hacking to output them.

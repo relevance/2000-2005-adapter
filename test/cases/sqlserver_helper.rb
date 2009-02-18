@@ -25,6 +25,7 @@ class StringDefaultsBigView < ActiveRecord::Base ; self.table_name = 'string_def
 class SqlServerUnicode < ActiveRecord::Base ; end
 class SqlServerString < ActiveRecord::Base ; end
 class SqlServerChronic < ActiveRecord::Base
+  # Disable next line only in 2008 models
   coerce_sqlserver_date :date
   coerce_sqlserver_time :time
   default_timezone = :utc
@@ -94,6 +95,7 @@ module ActiveRecord
     class << self
       def sqlserver_2000? ; ActiveRecord::Base.connection.sqlserver_2000? ; end
       def sqlserver_2005? ; ActiveRecord::Base.connection.sqlserver_2005? ; end
+      def sqlserver_2008? ; ActiveRecord::Base.connection.sqlserver_2008? ; end
     end
     def assert_sql(*patterns_to_match)
       $queries_executed = []
@@ -107,6 +109,7 @@ module ActiveRecord
     end
     def sqlserver_2000? ; self.class.sqlserver_2000? ; end
     def sqlserver_2005? ; self.class.sqlserver_2005? ; end
+    def sqlserver_2008? ; self.class.sqlserver_2008? ; end
   end
 end
 

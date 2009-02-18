@@ -284,6 +284,7 @@ class AdapterTestSqlserver < ActiveRecord::TestCase
         should 'truncate 3001 usec to just 003 in the DB cast back to 3000' do
           @time.stubs(:usec).returns(3001)
           saved = SqlServerChronic.create!(:datetime => @time).reload
+
           assert_equal '003', saved.datetime_before_type_cast.split('.')[1]
           assert_equal 3000, saved.datetime.usec
         end
@@ -554,8 +555,11 @@ class AdapterTestSqlserver < ActiveRecord::TestCase
       end
       
       should 'using alternate view defintion still be able to find real default' do
-        assert_equal 'null', StringDefaultsBigView.new.pretend_null, 
-          StringDefaultsBigView.columns_hash['pretend_null'].inspect
+        if sqlserver_2008?
+          assert_equal nil, StringDefaultsBigView.new.pretend_null, StringDefaultsBigView.columns_hash['pretend_null'].inspect
+        else
+          assert_equal 'null', StringDefaultsBigView.new.pretend_null, StringDefaultsBigView.columns_hash['pretend_null'].inspect
+        end
       end
 
     end

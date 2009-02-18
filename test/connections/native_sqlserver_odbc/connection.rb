@@ -8,16 +8,12 @@ ActiveRecord::Base.configurations = {
   'arunit' => {
     :adapter  => 'sqlserver',
     :mode     => 'ODBC',
-    :host     => 'localhost',
-    :username => 'rails',
-    :dsn => 'activerecord_unittest'
+    :dsn      => 'DRIVER=/opt/local/lib/libtdsodbc.so;TDS_Version=8.0;SERVER=172.16.132.128;DATABASE=activerecord_unittest;Port=1433;uid=rails;pwd=;'
   },
   'arunit2' => {
     :adapter  => 'sqlserver',
     :mode     => 'ODBC',
-    :host     => 'localhost',
-    :username => 'rails',
-    :dsn => 'activerecord_unittest2'
+    :dsn      => 'DRIVER=/opt/local/lib/libtdsodbc.so;TDS_Version=8.0;SERVER=172.16.132.128;DATABASE=activerecord_unittest2;Port=1433;uid=rails;pwd=;'  
   }
 }
 
